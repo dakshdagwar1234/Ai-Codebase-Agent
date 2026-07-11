@@ -11,34 +11,33 @@ function App() {
   const { user, token } = useSelector((state) => state.agent);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const hasFetched = useRef(false);
-  // --- NEW: THE GITHUB CALLBACK CATCHER ---
+
  useEffect(() => {
    const urlParams = new URLSearchParams(window.location.search);
    const code = urlParams.get("code");
-   const returnedState = urlParams.get("state"); // 👈 Grab the state GitHub sent back
+   const returnedState = urlParams.get("state"); 
 
    if (code && !hasFetched.current) {
      hasFetched.current = true;
 
      window.history.replaceState({}, document.title, "/");
 
-     // --- 🚨 NEW: ANTI-CSRF SECURITY CHECK 🚨 ---
+   
      const savedState = sessionStorage.getItem("github_oauth_state");
-     sessionStorage.removeItem("github_oauth_state"); // Instantly burn it so it can't be reused
+     sessionStorage.removeItem("github_oauth_state");
 
-     // If the states don't match, or if there is no saved state, ABORT!
+   
      if (!savedState || savedState !== returnedState) {
        console.error(
-         "🚨 SECURITY ALERT: OAuth state mismatch. Possible CSRF attack prevented.",
+         "OAuth state mismatch. Possible CSRF attack prevented.",
        );
        alert("Security verification failed. Please try logging in again.");
-       return; // Stop execution right here. Do not send the code to the backend.
+       return;
      }
-     // ------------------------------------------
 
      setIsAuthenticating(true);
      axios
-       .post("http://localhost:8000/api/auth/github", { code })
+       .post(`${import.meta.env.VITE_API_URL}/api/auth/github`, { code })
        .then((response) => {
          dispatch(
            setAuth({
@@ -57,19 +56,18 @@ function App() {
    }
  }, [dispatch]);
 
-  // --- NEW: LOGIN BUTTON HANDLER ---
 const handleLogin = () => {
   const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
 
-  // 1. Generate a random unguessable string
+
   const randomState =
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
 
-  // 2. Save it to sessionStorage before they leave
+ 
   sessionStorage.setItem("github_oauth_state", randomState);
 
-  // 3. Attach it to the URL
+
   window.location.assign(
     `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo&state=${randomState}`,
   );
@@ -104,8 +102,6 @@ const handleLogin = () => {
     );
   }
 
-  // --- NEW: THE LOGIN WALL ---
-  // If no token exists, lock the app and force them to log in
   if (!token) {
     return (
       <div className="h-screen w-full bg-slate-950 flex flex-col items-center justify-center">
@@ -135,12 +131,12 @@ const handleLogin = () => {
     );
   }
 
-  // --- THE MAIN APP (If Logged In) ---
+
   return (
     <div className="flex h-screen w-full bg-slate-950 text-slate-300 font-sans overflow-hidden">
       <Sidebar />
       <div className="flex flex-col flex-1 relative">
-        {/* User Profile Header */}
+       
         <div className="absolute top-4 right-4 z-10 flex items-center gap-3 bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded-full border border-slate-800">
           <img
             src={user?.avatar_url}
@@ -158,12 +154,11 @@ const handleLogin = () => {
           </button>
         </div>
 
-        {/* Chat Message Area */}
+      
         <div className="flex-1 overflow-y-auto">
           <ChatFeed />
         </div>
 
-        {/* --- ACTUAL CHAT INPUT COMPONENT --- */}
         <ChatInput />
 
       </div>

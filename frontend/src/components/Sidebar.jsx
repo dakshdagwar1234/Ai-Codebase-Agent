@@ -42,7 +42,7 @@ const Sidebar = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/chat/threads/all",
+        `${import.meta.env.VITE_API_URL}/api/chat/threads/all`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,9 +84,12 @@ const Sidebar = () => {
     setIsDeleting(true);
     dispatch(setLoading(true));
     try {
-      await axios.delete(`http://localhost:8000/api/chat/${targetThreadId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/chat/${targetThreadId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       const updatedList = threadList.filter((t) => t.id !== targetThreadId);
       dispatch(setThreadList(updatedList));
@@ -111,7 +114,7 @@ const Sidebar = () => {
     setIsPurging(true);
     dispatch(setLoading(true));
     try {
-      await axios.delete("http://localhost:8000/api/chat/purge-all", {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/chat/purge-all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       dispatch(clearStore());
@@ -133,7 +136,7 @@ const Sidebar = () => {
 
     try {
       await axios.put(
-        `http://localhost:8000/api/chat/threads/${targetId}/rename`,
+        `${import.meta.env.VITE_API_URL}/api/chat/threads/${targetId}/rename`,
         { name: editNameValue.trim() },
         { headers: { Authorization: `Bearer ${token}` } },
       );

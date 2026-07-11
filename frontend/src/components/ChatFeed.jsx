@@ -33,7 +33,7 @@ const ChatFeed = () => {
       setIsFetchingHistory(true);
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/chat/${threadId}/history`,
+          `${import.meta.env.VITE_API_URL}/api/chat/${threadId}/history`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ const ChatFeed = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/chat",
+        `${import.meta.env.VITE_API_URL}/api/chat`,
         {
           repository_url: repoUrl,
           message: "User confirmed action. Execute tool.",
@@ -105,7 +105,7 @@ const ChatFeed = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/chat",
+        `${import.meta.env.VITE_API_URL}/api/chat`,
         {
           repository_url: repoUrl,
           message: "User rejected action. Abort tool.",
