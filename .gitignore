@@ -1,0 +1,12 @@
+node_modules
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+.env
+dist
+test_gemini.py
